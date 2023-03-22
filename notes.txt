@@ -1,0 +1,102 @@
+In our blog, the first registered user in db will be the admin. They will be able to create new blog posts, edit posts and delete posts.
+The first user's id is 1. We can use this in index.html and post.html to make sure that only the admin user can see the "Create New Post" and "Edit Post" and Delete buttons.
+
+2. Just because a user can't see the buttons, they can still manually access the /edit-post or /new-post or /delete routes.
+khasma ta editpost button dabayesi balla edit-post route trigger hunthyo, button maa ta protection lagaim adminle matra
+dekhna milni vanera , but ini routes user le mannually nita access garna sakthyoni, so rokdini
+
+ Protect these routes by creating a Python decorator called @admin_only
+If the current_user's id is 1 then they can access those routes, otherwise, they should get a 403 error (not authorised).
+
+g.user == current_user , *args ra **kwargs refers all the contents of function (f) , i think
+@wraps() ley f function ka sab original information wrap garxa rey
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if g.user is None:   # if current_user == None i.e. login garexaina ajai
+            return redirect(url_for('login', next=request.url))
+        return f(*args, **kwargs)  # currentuser exist garxavani, loggedin xa , so jun routema jadai thyo that continues
+    return decorated_function
+
+# kunai view function ma ta argument hunasakxan nita (post_id) jastai , url bata aako variable access garna
+# so hunani paye nahunani paye argument, so *args,**kwargs lekhesi aanandai
+
+def admin_only(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        #If id is not 1 then return abort with 403 error
+        if current_user.id != 1:
+            return abort(403)  # unauthorized
+        #Otherwise if id=1, continue with the route function
+        return f(*args, **kwargs)
+    return decorated_function
+
+abort(404) raises an 404 error
+abort(403) raises forbidden/unauthorized error
+
+- sab render_template() maa , current_user=current_user pathaim, navbar ka kura milauna
+login navakovaye navbar ma  login register dekhauni
+login vakovaye navbarma logout dekhauni
+Hi, passing current_user from main.py looks needless. The code works the same without it.
+current_user.is_authenticated returns true if user is loggedin
+
+- current_user.username or blogpost.author.username is same
+author is a Users object , so can tap into fields of users
+
+The next step is to allow users to leave a comment and save the comment. Now that we've seen how relationships can be
+established between tables in our database. Let's step up our relationships to create a new Table where any user can
+ write comments to our blog post
+ Both a string and text field will hold information that you can freely write in. The major difference between the two
+  fields is how many characters you can put in these fields. A string field has a limit of 255 characters, whereas a
+   text field has a character limit of 30,000 characters. [db.String vs db.Text]
+
+Establish a One to Many relationship Between the User Table (Parent) and the Comment table (Child). Where One User is
+linked to Many Comment objects.
+[ esari linkkk garneyy tables laii, aile comments table ra users table lai link garim, paila users table ra blogpost table
+lai link garim by db.relationship() [one to many]
+
+ctrl+R [find and replace]
+ctrl+F [search anything in any page]
+
+Establish a One to Many relationship between each BlogPost object (Parent) and Comment object (Child).
+ Where each BlogPost can have many associated Comment objects.
+
+ At this point, with a new Table added, it's a good idea to delete the existing blog.db entirely and to use the line
+ db.create_all() to create all the tables from scratch. This means you should create a new admin user (id == 1),
+ # suru walauser lai adminko darja dexam nita
+ a new blog post and another user who will make some comments.
+ # databse ma table ma change garna painna estari, scratch batai banaam delete garera
+
+# comment.commen_author.username [comment_author afaima user obj ho, so can tap into user attributes], comment.text
+comment.text is from ckeditor, data from ckeditor field is saved as html, flask treats html as plain text
+so we use |safe filter to treat it as html
+
+Gravatar images are used across the internet to provide an avatar image for blog commenters.
+(comment garda ko profilepic type, utube ko cmt jasto] , random avatar dini particular userlai
+pip install Flask-Gravatar
+Gravatar images may be requested just like a normal image, using an IMG tag.
+To get an image specific to a user, you must first calculate their email hash.
+coz auta user le 2 ta comment hanyovani, duitaima tesko avatar farak hunata vaenani
+auta userko auta avatar fix gardiney
+First create a gravatar object as shown in documentation
+Then in your template:
+# auta particular email wala userlai lai autaa paricular gravatar fix hunevayo
+{{ 'test@gmail.com' | gravatar }}
+
+- comment table contained all comments, but kun postko comment ho ra kun userle gareko , thapauna parthyo
+so relationship() lagaim Users ra Blogpost tables sita
+so Comment table ma author_id ra post_id columns diyim
+relationship() wala fields dekhinnan but can be tapped into
+
+- Upload your final project to Github
+Local Version Control with PyCharm
+ Let's put our project under version control. We can do this in PyCharm by simply going to VCS ->
+ Enable Version Control Integration.
+This is the same as what we did before with git init , git init garejhai a Git repository is now created in this working directory
+All the files in our project will turn red because they are not yet added to the staging area to be tracked by git.
+
+- Add all the files in the project to the staging area by selecting the parent folder(starting_Files+-+...) ->right-click->and going to VSC -> Git -> Add
+All the files should now turn green.
+Make your initial commit by going to VCS ->  Commit
+
