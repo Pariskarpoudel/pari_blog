@@ -99,4 +99,21 @@ All the files in our project will turn red because they are not yet added to the
 - Add all the files in the project to the staging area by selecting the parent folder(starting_Files+-+...) ->right-click->and going to VSC -> Git -> Add
 All the files should now turn green.
 Make your initial commit by going to VCS ->  Commit
+Before we upload our code to GitHub, we should be careful that we are not uploading any secret information. e.g. personal emails or API keys.
+It's quite painful to review all the code for these things, so by convention, developers tend to put the top-secret information in an environment .env file.
+# .env file banaim, aileta kei secret info xaina, yedi thyo vane tesma esto lekhthe:
+SECRET_KEY = "secret123"
+PASSWORD = "password123"
+locally: run-> edit_configurations-> python -> pastee button square shaped, all env variables will be now in python environment for that file
 
+ import os
+ from dotenv import load_dotenv, find_dotenv
+
+ load_dotenv(find_dotenv())
+ secret_key = os.get_env("SECRET_KEY")
+
+esto garthim
+Then we can add a .gitignore file to tell our version control system to ignore those files when pushing to a remote.
+coz secret credentials gihtub repository ma upload gardenan, we should ignore them
+gitignore pailaibata raixa venv ma
+Then again commit
